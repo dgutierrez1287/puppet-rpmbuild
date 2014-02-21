@@ -14,27 +14,93 @@
 # Requires: see Modulefile
 #
 #
-class rpmbuild (
-  $rpmbuild_packages = $rpmbuild::params::rpmbuild_packages,
-  $optional_packages = $rpmbuild::params::optional_packages,
-  ) inherits rpmbuild::params {
+class rpmbuild {
   
-  # validate params
-  validate_array($rpmbuild_packages)
-  validate_array($optional_packages)
-  
-  # install the packages 
-  package { $rpmbuild_packages:
-    ensure => latest,
-  }
-  
-  # if there are optional packages provided install them to the latest version
-  if size($optional_packages) != 0 {
-    package { $optional_packages:
-      ensure => latest,
+  # install packages...
+  # yes. this is all kinds of fugly. however, without the 'if !Package...' package definitions will conflict
+  # definitions in other modules
+
+  # required packages 
+  if !Package['make'] {
+    package { 'make':
+      ensure  => installed,
     }
   }
-  
+
+  if !Package['automake'] {
+    package { 'automake':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['autoconf'] {
+    package { 'autoconf':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['gcc'] {
+    package { 'gcc':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['gcc-c++'] {
+    package { 'gcc-c++':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['rpm-build'] {
+    package { 'rpm-build':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['redhat-rpm-config'] {
+    package { 'redhat-rpm-config':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['rpmdevtools'] {
+    package { 'rpmdevtools':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['yum'] {
+    package { 'yum':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['yum-utils'] {
+    package { 'yum-utils':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['createrepo'] {
+    package { 'createrepo':
+      ensure  => installed,
+    }
+  }
+
+  if !Package['gnupg2'] {
+    package { 'gnupg2':
+      ensure  => installed,
+    }
+  }
+   
+  # if there are optional packages provided install them to the latest version
+  # for example...
+  #if !Package['gcc'] {
+  #  package { 'gcc':
+  #    ensure  => installed,
+  #  }
+  #}
+ 
   # if the operating system is fedora install the extra packages
   if $operatingsystem == 'Fedora' {
     
