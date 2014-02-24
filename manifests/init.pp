@@ -17,90 +17,103 @@
 class rpmbuild {
   
   # install packages...
-  # yes. this is all kinds of fugly. however, without the 'if !Package...' package definitions will conflict
+  # yes. this is all kinds of fugly. however, without the 'if !defined(Package...' package definitions will conflict
   # definitions in other modules
 
   # required packages 
-  if !Package['make'] {
+  if !defined(Package['make']) {
     package { 'make':
       ensure  => installed,
     }
   }
 
-  if !Package['automake'] {
+  if !defined(Package['automake']) {
     package { 'automake':
       ensure  => installed,
     }
   }
 
-  if !Package['autoconf'] {
+  if !defined(Package['autoconf']) {
     package { 'autoconf':
       ensure  => installed,
     }
   }
 
-  if !Package['gcc'] {
+  if !defined(Package['gcc']) {
     package { 'gcc':
       ensure  => installed,
     }
   }
 
-  if !Package['gcc-c++'] {
+  if !defined(Package['gcc-c++']) {
     package { 'gcc-c++':
       ensure  => installed,
     }
   }
 
-  if !Package['rpm-build'] {
+  if !defined(Package['rpm-build']) {
     package { 'rpm-build':
       ensure  => installed,
     }
   }
 
-  if !Package['redhat-rpm-config'] {
+  if !defined(Package['redhat-rpm-config']) {
     package { 'redhat-rpm-config':
       ensure  => installed,
     }
   }
 
-  if !Package['rpmdevtools'] {
+  if !defined(Package['rpmdevtools']) {
     package { 'rpmdevtools':
       ensure  => installed,
     }
   }
 
-  if !Package['yum'] {
+  if !defined(Package['yum']) {
     package { 'yum':
       ensure  => installed,
     }
   }
 
-  if !Package['yum-utils'] {
+  if !defined(Package['yum-utils']) {
     package { 'yum-utils':
       ensure  => installed,
     }
   }
 
-  if !Package['createrepo'] {
+  if !defined(Package['createrepo']) {
     package { 'createrepo':
       ensure  => installed,
     }
   }
 
-  if !Package['gnupg2'] {
+  if !defined(Package['gnupg2']) {
     package { 'gnupg2':
       ensure  => installed,
     }
   }
-   
+  
+  if !defined(Package['rpmlint']) {
+    package { 'rpmlint' :
+      ensure => installed,
+    }
+  }
+
+  if !defined(Package['mock']) {
+      package { 'mock' :
+          ensure => installed
+      }
+  }
+
+
   # if there are optional packages provided install them to the latest version
   # for example...
-  #if !Package['gcc'] {
+  #if !defined(Package['gcc'] {
   #  package { 'gcc':
   #    ensure  => installed,
   #  }
   #}
- 
+
   # if the operating system is fedora install the extra packages
   if $operatingsystem == 'Fedora' {
     
