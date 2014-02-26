@@ -25,8 +25,10 @@ class rpmbuild (
   
   # addpkg method to make things clean and pretty
   define addpkg {
-	package { $name :
-	  ensure	=> installed,
+    if !defined(Package[$name] {
+  	  package { $name :
+	    ensure	=> installed,
+  	  }
 	}
   }
 
