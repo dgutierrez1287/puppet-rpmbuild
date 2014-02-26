@@ -23,18 +23,15 @@ class rpmbuild (
   validate_array($rpmbuild_packages)
   validate_array($optional_packages)
   
-  # install the packages 
-  package { $rpmbuild_packages:
-    ensure => latest,
+  # addpkg method to make things clean and pretty
+  define addpkg {
+	package { $name :
+	  ensure	=> installed,
+	}
   }
-  
-  # if there are optional packages provided install them to the latest version
-  if size($optional_packages) != 0 {
-    package { $optional_packages:
-      ensure => latest,
-    }
-  }
-  
+
+  addpkg{$pkgs:}
+
   # if the operating system is fedora install the extra packages
   if $operatingsystem == 'Fedora' {
     
