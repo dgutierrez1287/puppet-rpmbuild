@@ -14,105 +14,23 @@
 # Requires: see Modulefile
 #
 #
-class rpmbuild {
+class rpmbuild (
+  $rpmbuild_packages = $rpmbuild::params::rpmbuild_packages,
+  $optional_packages = $rpmbuild::params::optional_packages,
+  ) inherits rpmbuild::params {
   
-  # install packages...
-  # yes. this is all kinds of fugly. however, without the 'if !defined(Package...' package definitions will conflict
-  # definitions in other modules
-
-  # required packages 
-  if !defined(Package['make']) {
-    package { 'make':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['automake']) {
-    package { 'automake':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['autoconf']) {
-    package { 'autoconf':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['gcc']) {
-    package { 'gcc':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['gcc-c++']) {
-    package { 'gcc-c++':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['rpm-build']) {
-    package { 'rpm-build':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['redhat-rpm-config']) {
-    package { 'redhat-rpm-config':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['rpmdevtools']) {
-    package { 'rpmdevtools':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['yum']) {
-    package { 'yum':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['yum-utils']) {
-    package { 'yum-utils':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['createrepo']) {
-    package { 'createrepo':
-      ensure  => installed,
-    }
-  }
-
-  if !defined(Package['gnupg2']) {
-    package { 'gnupg2':
-      ensure  => installed,
-    }
-  }
+  # validate params
+  validate_array($rpmbuild_packages)
+  validate_array($optional_packages)
   
-  if !defined(Package['rpmlint']) {
-    package { 'rpmlint' :
-      ensure => installed,
-    }
+  # addpkg method to make things clean and pretty
+  define addpkg {
+	package { $name :
+	  ensure	=> installed,
+	}
   }
 
-  if !defined(Package['mock']) {
-      package { 'mock' :
-          ensure => installed
-      }
-  }
-
-
-  # if there are optional packages provided install them to the latest version
-  # for example...
-  #if !defined(Package['gcc'] {
-  #  package { 'gcc':
-  #    ensure  => installed,
-  #  }
-  #}
+  addpkg{$pkgs:}
 
   # if the operating system is fedora install the extra packages
   if $operatingsystem == 'Fedora' {
