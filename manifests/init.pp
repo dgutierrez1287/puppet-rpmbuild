@@ -30,7 +30,10 @@ class rpmbuild (
 	}
   }
 
-  addpkg{$pkgs:}
+  # install
+  addpkg{$rpmbuild_packages:}
+  addpkg{$optional_packages:}
+  
 
   # if the operating system is fedora install the extra packages
   if $operatingsystem == 'Fedora' {
