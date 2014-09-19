@@ -38,9 +38,12 @@ define rpmbuild::env::userhome (
     fail('ERROR: usedefualtmacros parameter must be yes or no')
   }
 
-  user { $username: }
+  user { $username:
+    ensure => present,
+  }
 
   group { $username:
+    ensure => present,
     members => [ $username ],
     require => User[$username],
   }
