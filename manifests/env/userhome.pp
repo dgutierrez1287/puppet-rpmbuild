@@ -23,7 +23,7 @@ define rpmbuild::env::userhome (
     $emailaddress = '',
     $macrofilepath = '',
 ){
-  
+
   # validate the username which is needed for 
   # both cases
   validate_string($username)
@@ -32,15 +32,25 @@ define rpmbuild::env::userhome (
   if size($username) == 0 {
     fail('ERROR: username field cant be empty')
   }
-  
-  
+
   # make sure usedefaultmacros variable is yes or no
   if ! ($usedefaultmacros in [ 'yes', 'no' ]) {
     fail('ERROR: usedefualtmacros parameter must be yes or no')
   }
-  
+
+  user { $username:
+    ensure => present,
+  }
+
+  group { $username:
+    ensure => present,
+    members => [ $username ],
+    require => User[$username],
+  }
+
   # array to create the rpmbuild dirs
   $rpm_dirs = [
+    "/home/${username}",
     "/home/${username}/rpmbuild",
     "/home/${username}/rpmbuild/BUILD",
     "/home/${username}/rpmbuild/RPMS",
@@ -48,7 +58,7 @@ define rpmbuild::env::userhome (
     "/home/${username}/rpmbuild/SPECS",
     "/home/${username}/rpmbuild/SRPMS",
   ]
-  
+
   # create the directories
   file { $rpm_dirs:
     recurse => true,
@@ -56,8 +66,9 @@ define rpmbuild::env::userhome (
     owner   => $username,
     group   => $username,
     mode    => 0644,
+    require => Group[$username],
   }
-  
+
   if $usedefaultmacros == 'yes' {
     notify{"using the default rpmmacros template": }
     
@@ -65,7 +76,7 @@ define rpmbuild::env::userhome (
     validate_string($userfirstname)
     validate_string($userlastname)
     validate_string($emailaddress)
-   
+
    # error check for needed parameters
    if size($userfirstname) == 0 {
       fail('ERROR: userfirstname field cant be empty')
@@ -76,7 +87,7 @@ define rpmbuild::env::userhome (
    if size($emailaddress) == 0 {
      fail('ERROR: email address field cant be empty')
    }
-   
+
    # install the default rpmmacros via the template
    file { "/home/${username}/.rpmmacros":
      ensure  => 'present',
@@ -84,22 +95,24 @@ define rpmbuild::env::userhome (
      group   => $username,
      mode    => 0644,
      content => template('rpmbuild/default_macros.erb'),
+     require => Group[$username],
    }
   }
-  
+
   else {
     notify{"using the custom rpmmacros file": }
     
     if size($macrofilepath) == 0 {
       fail('ERROR: when using custom macro file macrofilepath cannot be empty')
     }
-    
+
     file { "/home/${username}/.rpmmacros":
       ensure => 'present',
-      owner => $username,
-      group => $username,
-      mode => 0644,
-      source => $macrofilepath,
+      owner   => $username,
+      group   => $username,
+      mode    => 0644,
+      source  => $macrofilepath,
+      require => Group[$username],
     }
   }
 }
